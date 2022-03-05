@@ -8,5 +8,66 @@
         <h1>这是一个标题 ^_^</h1>
         <p>我在2022年3月6日凌晨3:07写下这段话。</p>
         <p>测试测试测试哈哈哈哈哈哈</p>
+        <h2>进行一点书写测试</h2>
+        <h3>这是第一个小标题</h3>
+        <h3>这是第二个小标题</h3>
+        <h3>这是第三个小标题</h3>
+        <h4>test 01</h4>
+        <p>这是第二段话，我想插入一段代码：
+        # -*- coding: utf-8 -*-
+        """
+        Created on Sat Mar  5 20:02:06 2022
+
+        @author: Fook_
+        """
+
+        import pandas as pd
+        import numpy as np
+        from collections import Counter
+
+        def loadLabor(address):
+            spf = pd.read_csv(address, sep=',', index_col=False, header=None)
+            column = ['duration', 'wage-increase-first-year', 'wage-increase-second-year','wage-increase-third-year', 
+                    'cost-of-living-adjustment', 'working-hours', 'pension', 'standby-pay', 'shift-diffrerntial', 
+                    'education-allowance', 'statutory-holidays', 'vacation', 'longterm-disability-assistance', 
+                    'contribution-to-dental-plan', 'bereavement-assistance', 'contribution-to-health-plan','class']
+            spf.columns = column
+            
+            str_typeName = ['cost-of-living-adjustment', 'pension', 'education-allowance', 'vacation', 
+                            'longterm-disability-assistance', 'contribution-to-dental-plan', 
+                            'bereavement-assistance', 'contribution-to-health-plan', 'class']
+            
+            str2numeric = {}
+            str2numeric['?'] = '-1'
+            spf = spf.replace(str2numeric)
+            return spf, str2numeric, str_typeName
+
+        def fillMissData(spf, str2numeric):
+            row, col = spf.shape
+            columns = spf.columns
+            for column_name in columns:
+                if column_name not in str2numeric:
+                # nuber, first stretegy
+                    tmp = spf[column_name].apply(float)
+                    ave = np.average(tmp[tmp != -1])
+                    tmp[tmp == -1] = ave
+                    spf[column_name] = tmp
+                else:
+                    v = spf[column_name].values
+                    v1 = v[v != '-1']
+                    c = Counter(v1)
+                    cc = c.most_common(1)
+                    v[v == '-1'] = cc[0][0]
+            return spf
+
+        if __name__ == '__main__':
+            filepath = 'laborMissing.txt'
+            fillFilepath = 'laborMissing_handle.txt'
+            spf, str2numeric, str2numeric = loadLabor(filepath)
+            spf = fillMissData(spf, str2numeric)
+            spf.to_csv(fillFilepath, index = False, header = False)
+            
+        </p>
+        <h4>test 02</h4>
     </body>
 </html>
